@@ -10,7 +10,7 @@ router.post('/register', async (req, res) => {
     const { name, email, password, address, phoneNumber, nic} = req.body;
 
     // Check if the email is already registered
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email:email });
     if (user) {
       return res.status(400).json({ message: 'Email already registered' });
     }
@@ -35,11 +35,14 @@ router.post('/register', async (req, res) => {
 
 // Log in an existing user
 router.post('/login', async (req, res) => {
+  console.log(req.body);
   try {
     const { email, password } = req.body;
+    console.log(req.body);
 
     // Check if the email is registered
-    const user = await User.findOne({ email });
+    const user = await User.findOne({email: email });
+    console.log(user);
     if (!user) {
       return res.status(400).json({ message: 'Email not registered' });
     }
@@ -54,11 +57,19 @@ router.post('/login', async (req, res) => {
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET);
 
     res.status(200).json({ user, token });
+//     User.findOne({ email: email }).then( (err, data) => {
+//   if (err) {
+//     console.error(err);
+//   } else {
+//     console.log(data);
+//   }
+// });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
   }
 });
+
 router.get('/users', async (req, res) => {
   try {
     const users = await User.find();
